@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">BookListing</string>
+
+    <string name="settings_menu_item">Settings</string>
+
+    <string name="settings_numberOfBooks_label">Number Of Books</string>
+    <string name="settings_numberOfBooks_key">maxResults</string>
+    <string name="settings_numberOfBooks_default">5</string>
+    <string name="title_activity_setting_activity">setting_activity</string>
+</resources>
