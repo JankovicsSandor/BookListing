@@ -1,27 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="200dp">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/TitleId"
+        style="@style/titleText"
+        android:text="@string/placeholder"/>
+
     <ImageView
         android:id="@+id/imageView"
-        android:layout_margin="10dp"
-        android:layout_width="100dp"
-        android:layout_height="100dp" />
+        android:layout_below="@id/TitleId"
+        style="@style/BookImage" />
+
+
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/imageView"
+        android:layout_below="@id/TitleId"
+        android:orientation="vertical">
+
+
+
         <TextView
-            android:text="hrshsr"
-            android:layout_margin="15dp"
-            android:id="@+id/TitleId"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:id="@+id/authorId"
+            style="@style/authorText"
+            android:textSize="12sp"
+            android:text="@string/placeholder"/>
+
         <TextView
-            android:text="hrshs"
-            android:layout_margin="15dp"
+            android:id="@+id/yearId"
+            style="@style/authorText"
+            android:textSize="8sp"
+            android:text="@string/placeholder"/>
+
+        <TextView
             android:id="@+id/descId"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            style="@style/descText"
+            android:text="@string/placeholder"/>
+
     </LinearLayout>
-</LinearLayout>
+</RelativeLayout>

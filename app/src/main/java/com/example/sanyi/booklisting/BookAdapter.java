@@ -18,7 +18,7 @@ import java.util.List;
 
 public class BookAdapter extends ArrayAdapter<Book> {
 
-    private static final String  LOG_TAG = BookAdapter.class.getSimpleName();;
+    private static final String  LOG_TAG = BookAdapter.class.getSimpleName();
     public BookAdapter(@NonNull Context context,@NonNull List<Book> objects) {
         super(context,0,objects);
     }
@@ -32,10 +32,18 @@ public class BookAdapter extends ArrayAdapter<Book> {
             listView= LayoutInflater.from(getContext()).inflate(R.layout.book_element,parent,false);
         }
         Book currentbook=getItem(position);
+        // Setting the views to the proper text/resources
         ImageView imageView=(ImageView) listView.findViewById(R.id.imageView);
         imageView.setImageBitmap(currentbook.getImage());
+
         TextView title=(TextView) listView.findViewById(R.id.TitleId);
         title.setText(currentbook.getTitle());
+
+        TextView author=(TextView) listView.findViewById(R.id.authorId);
+        author.setText(currentbook.getAuthor());
+
+        TextView  year=(TextView) listView.findViewById(R.id.yearId);
+        year.setText(currentbook.getPublishDate());
 
         TextView desc=(TextView) listView.findViewById(R.id.descId);
         desc.setText(currentbook.getDescription());

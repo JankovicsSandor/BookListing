@@ -9,15 +9,19 @@ import android.graphics.Bitmap;
 public class Book {
 
     private String title;
-    private String description;
     private String author;
+    private String description;
+    private String publishDate;
     private Bitmap image;
+    private String onClinkLink;
 
-    public Book(Bitmap image, String author, String title, String description){
+    public Book(Bitmap image,String title,String author,String publishDate, String description,String onClickLink){
         this.image=image;
-        this.author=author;
         this.title=title;
+        this.author=author;
+        this.publishDate =publishDate;
         this.description=description;
+        this.onClinkLink=onClickLink;
 
     }
 
@@ -30,11 +34,19 @@ public class Book {
     }
 
 
-    public String getAuthor() {
-        return author;
+    public String getPublishDate() {
+        return publishDate;
     }
 
     public Bitmap getImage() {
         return image;
+    }
+
+    public String getOnClinkLink() {
+        return onClinkLink;
+    }
+
+    public String getAuthor() {
+        return author;
     }
 }

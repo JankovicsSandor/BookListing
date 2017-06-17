@@ -1,5 +1,6 @@
 package com.example.sanyi.booklisting;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.TextUtils;
@@ -25,7 +26,9 @@ import java.util.ArrayList;
 
 public final class Query {
 
-    private static final String  LOG_TAG = Query.class.getSimpleName();;
+    private static final String  LOG_TAG = Query.class.getSimpleName();
+    private static String imageLink;
+
     private Query(){}
 
     private static URL createUrl(String stringUrl){
@@ -38,6 +41,7 @@ public final class Query {
         }
         return url;
     }
+    //Gathering up the infromations needed for the query
     public static ArrayList<Book> fetchBookData(String requestUrl){
         Log.e("Request URL",requestUrl);
         URL url= createUrl(requestUrl);
@@ -51,7 +55,7 @@ public final class Query {
         return books;
     }
 
-
+//Requesting for a response
     private static String makeHttpRequest(URL url) throws IOException{
         String response="";
         if (url==null){return response;}
@@ -71,7 +75,7 @@ public final class Query {
                 Log.e(LOG_TAG, "Error response code: " + urlConnection.getResponseCode());
             }
         }catch (IOException e) {
-            Log.e(LOG_TAG, "Problem retrieving the earthquake JSON results.", e);
+            Log.e(LOG_TAG, "Problem retrieving the Book JSON results.", e);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -82,7 +86,7 @@ public final class Query {
         }
         return response;
     }
-
+// Reading from the response
     private static String readFromStream(InputStream inputStream) throws IOException{
         StringBuilder output=new StringBuilder();
         if(inputStream!=null){
@@ -97,38 +101,64 @@ public final class Query {
         return output.toString();
     }
     private static Bitmap bmp=null;
+    private static JSONArray author;
+    private static String authorName;
+    private static String publishDate;
     private static ArrayList<Book> extractFeatures(String json) {
         ArrayList<Book> books=new ArrayList<>();
         if (TextUtils.isEmpty(json)){
             return null;
         }
         try {
+            // Try to parse the json responses
             JSONObject baseJson = new JSONObject(json);
             JSONArray items=baseJson.getJSONArray("items");
             String description="";
             for (int i=0;i<items.length();i++){
                 JSONObject item=items.getJSONObject(i);
                 JSONObject volumeInfo=item.getJSONObject("volumeInfo");
-                JSONArray author=volumeInfo.getJSONArray("authors");
-                if(!volumeInfo.has("description")){
-                    description="-";
+
+                // Checking whether the API contains the name of the Author
+                if (volumeInfo.has("authors")){
+                    author=volumeInfo.getJSONArray("authors");
+                    authorName=author.getString(0);
+                }
+                else {
+                    authorName="Unknown";
+                }
+                if(volumeInfo.has("publishedDate")){
+                    publishDate=volumeInfo.getString("publishedDate");
+                }
+                else {
+                    publishDate="Unknown";
+                }
+                // Checking whether the API contains the description of the book
+                if(!item.has("searchInfo")){
+                    description="No available description";
                 }
                 else{
-                    description=volumeInfo.getString("description");
+                    JSONObject search=item.getJSONObject("searchInfo");
+                    description=search.getString("textSnippet");
                 }
-                JSONObject image=volumeInfo.getJSONObject("imageLinks");
-                String imageLink=image.getString("smallThumbnail");
-                try {
-                    URL url=new URL(imageLink);
-                    bmp= BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                // Checking whether the API contains the picture of the book
+                if(volumeInfo.has("imageLinks")){
+                    JSONObject image=volumeInfo.getJSONObject("imageLinks");
+                    imageLink=image.getString("smallThumbnail");
+                    try {
+                        URL url=new URL(imageLink);
+                        bmp= BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                    }
+                    catch (MalformedURLException e){
+                        Log.e(LOG_TAG,"Error making the imagUrl",e);
+                    }
+                    catch (IOException e){
+                        Log.e(LOG_TAG,"Error making the bmp",e);
+                    }
                 }
-                catch (MalformedURLException e){
-                    Log.e(LOG_TAG,"Error making the imagUrl",e);
+                else{
+                    bmp=BitmapFactory.decodeResource(Resources.getSystem(),R.drawable.ic_settings_black_24dp);
                 }
-                catch (IOException e){
-                    Log.e(LOG_TAG,"Error making the bmp",e);
-                }
-                books.add(new Book(bmp,author.getString(0),volumeInfo.getString("title"),description));
+                books.add(new Book(bmp,volumeInfo.getString("title"),authorName,publishDate,description,volumeInfo.getString("previewLink")));
             }
         }
         catch (JSONException e){

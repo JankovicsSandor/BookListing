@@ -16,18 +16,23 @@ public class Settings extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
     }
+
     public static class BookPreferenceFragment extends PreferenceFragment
-            implements Preference.OnPreferenceChangeListener{
+            implements Preference.OnPreferenceChangeListener {
 
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.settings_main);
 
+            Preference category = findPreference(getString(R.string.setting_category_key));
+            bindPreference(category);
+
             Preference maxbook = findPreference(getString(R.string.settings_numberOfBooks_key));
             bindPreference(maxbook);
         }
 
+        // Defining the preferencechangelistener
         @Override
         public boolean onPreferenceChange(Preference preference, Object newValue) {
             String stringValue = newValue.toString();
@@ -43,7 +48,9 @@ public class Settings extends AppCompatActivity {
             }
             return true;
         }
-        private void bindPreference(Preference preference){
+
+        // Writing out the actual value of preferencaces
+        private void bindPreference(Preference preference) {
             preference.setOnPreferenceChangeListener(this);
             SharedPreferences preferences =
                     PreferenceManager.getDefaultSharedPreferences(preference.getContext());

@@ -2,9 +2,18 @@
     <string name="app_name">BookListing</string>
 
     <string name="settings_menu_item">Settings</string>
+    <string name="noInternet">No internet Availabe</string>
+    <string name="noResult">No results to be shown</string>
+
+    <string name="settings_category_label">Category</string>
+    <string name="settings_category_default">android</string>
+    <string name="setting_category_key">q</string>
 
     <string name="settings_numberOfBooks_label">Number Of Books</string>
     <string name="settings_numberOfBooks_key">maxResults</string>
     <string name="settings_numberOfBooks_default">5</string>
+
     <string name="title_activity_setting_activity">setting_activity</string>
+    <string name="no_desc">No available description</string>
+    <string name="placeholder">Placeholder</string>
 </resources>

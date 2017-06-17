@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -27,16 +28,21 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private static final int BOOK_LOADER_ID = 1;
     private TextView mEmptyStateTextView;
     private ProgressBar mProgressBar;
-    private static final  String REQUEST_URL="https://www.googleapis.com/books/v1/volumes?q=android";
+    private static final  String REQUEST_URL="https://www.googleapis.com/books/v1/volumes?";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // Checking network connection
         ConnectivityManager cm = (ConnectivityManager) getApplicationContext().getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo active= cm.getActiveNetworkInfo();
         boolean isConnnected= active !=null && active.isConnectedOrConnecting();
+
+        // Setting the networkstatus textview
         Log.e("Started the init",Log_Tag);
         mEmptyStateTextView=(TextView) findViewById(R.id.empty_view);
+
+        //Setting up emptyviews
         ListView bookListView = (ListView) findViewById(R.id.list);
         bookListView.setEmptyView(mEmptyStateTextView);
         mProgressBar=(ProgressBar) findViewById(R.id.progressBar);
@@ -46,12 +52,20 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         else{
             mProgressBar.setVisibility(View.GONE);
 
-            mEmptyStateTextView.setText("No internet available");
+            mEmptyStateTextView.setText(getString(R.string.noInternet));
         }
-
+        //Setting up adapters
         mAdapter=new BookAdapter(this,new ArrayList<Book>());
         bookListView.setAdapter(mAdapter);
-
+        bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Book currentBook=mAdapter.getItem(position);
+                String url=currentBook.getOnClinkLink();
+                Intent intent= new Intent(Intent.ACTION_VIEW,Uri.parse(url));
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -71,18 +85,23 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         return true;
     }
 
+    // Creating loader
     @Override
     public Loader<List<Book>> onCreateLoader(int id, Bundle args) {
         Log.e("Started the create","");
         SharedPreferences sharedPrefs= PreferenceManager.getDefaultSharedPreferences(this);
+        String type=sharedPrefs.getString(getString(R.string.setting_category_key),
+                getString(R.string.settings_category_default));
+
         String maxbook = sharedPrefs.getString(
                 getString(R.string.settings_numberOfBooks_key),
                 getString(R.string.settings_numberOfBooks_default));
         Uri uri =Uri.parse(REQUEST_URL);
         Log.e("Value of maxbook",maxbook);
         Uri.Builder uriBulider=uri.buildUpon();
-
+        uriBulider.appendQueryParameter("q",type);
         uriBulider.appendQueryParameter("maxResults", maxbook);
+
 
         return new BookLoader(this,uriBulider.toString());
     }
@@ -90,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onLoadFinished(Loader<List<Book>> loader,List<Book> data) {
         mProgressBar.setVisibility(View.GONE);
-        mEmptyStateTextView.setText("No results to be shown");
+        mEmptyStateTextView.setText(getString(R.string.noResult));
         Log.e("Started the finish","");
         mAdapter.clear();
         if(data!= null && !data.isEmpty()){
