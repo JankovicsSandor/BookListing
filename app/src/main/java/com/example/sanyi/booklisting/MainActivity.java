@@ -22,10 +22,11 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Book>> {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Book>>,
+        SharedPreferences.OnSharedPreferenceChangeListener {
     String Log_Tag="alma";
-    private BookAdapter mAdapter;
-    private static final int BOOK_LOADER_ID = 1;
+    private  BookAdapter mAdapter;
+    private final int BOOK_LOADER_ID = 1;
     private TextView mEmptyStateTextView;
     private ProgressBar mProgressBar;
     private static final  String REQUEST_URL="https://www.googleapis.com/books/v1/volumes?";
@@ -121,5 +122,22 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onLoaderReset(Loader<List<Book>> loader) {
         Log.e("Started the reset","");
         mAdapter.clear();
+    }
+    // Implementing what to happen when the change has been made
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+
+        Log.e(Log_Tag,"Shared preference has been changed");
+        // If the key is equal to eaither one of the keys
+        if(key.equals(getString(R.string.settings_numberOfBooks_key)) || key.equals(getString(R.string.setting_category_key))){
+            mAdapter.clear();
+
+            mEmptyStateTextView.setVisibility(View.GONE);
+            // Restarting the loader
+            View loading=findViewById(R.id.progressBar);
+            loading.setVisibility(View.VISIBLE);
+
+            getLoaderManager().restartLoader(BOOK_LOADER_ID,null,this);
+        }
     }
 }

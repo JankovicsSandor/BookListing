@@ -18,7 +18,7 @@ public class Settings extends AppCompatActivity {
     }
 
     public static class BookPreferenceFragment extends PreferenceFragment
-            implements Preference.OnPreferenceChangeListener {
+            implements Preference.OnPreferenceChangeListener{
 
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -32,7 +32,15 @@ public class Settings extends AppCompatActivity {
             bindPreference(maxbook);
         }
 
-        // Defining the preferencechangelistener
+        // Writing out the actual value of preferencaces
+        private void bindPreference(Preference preference) {
+            preference.setOnPreferenceChangeListener(this);
+            SharedPreferences preferences =
+                    PreferenceManager.getDefaultSharedPreferences(preference.getContext());
+            String preferenceString = preferences.getString(preference.getKey(), "");
+            onPreferenceChange(preference, preferenceString);
+        }
+
         @Override
         public boolean onPreferenceChange(Preference preference, Object newValue) {
             String stringValue = newValue.toString();
@@ -47,15 +55,6 @@ public class Settings extends AppCompatActivity {
                 preference.setSummary(stringValue);
             }
             return true;
-        }
-
-        // Writing out the actual value of preferencaces
-        private void bindPreference(Preference preference) {
-            preference.setOnPreferenceChangeListener(this);
-            SharedPreferences preferences =
-                    PreferenceManager.getDefaultSharedPreferences(preference.getContext());
-            String preferenceString = preferences.getString(preference.getKey(), "");
-            onPreferenceChange(preference, preferenceString);
         }
     }
 }
